@@ -290,7 +290,7 @@
     });
 
     async function createSession() {
-        const response = await fetch("https://4.190.164.31:5001/VideoCapture/CreateSession",
+        const response = await fetch("/VideoCapture/CreateSession",
             {
                 method: "POST",
                 headers: {
@@ -401,7 +401,7 @@
          */
         formData.append("chunk", blob, `chunk_${String(chunkNumber).padStart(8, "0")}.part`);
 
-        const url = "https://4.190.164.31:5001/VideoCapture/UploadChunk" + `?sessionId=${encodeURIComponent(state.sessionId)}` + `&chunkNumber=${chunkNumber}`;
+        const url = "/VideoCapture/UploadChunk" + `?sessionId=${encodeURIComponent(state.sessionId)}` + `&chunkNumber=${chunkNumber}`;
 
         const response = await fetch(url, {
             method: "POST",
@@ -542,7 +542,7 @@
          */
         await state.uploadQueue;
 
-        const url = "https://4.190.164.31:5001/VideoCapture/Complete" + `?sessionId=${encodeURIComponent(state.sessionId)}`;
+        const url = "/VideoCapture/Complete" + `?sessionId=${encodeURIComponent(state.sessionId)}`;
 
         const response = await fetch(url, {
             method: "POST",
@@ -612,7 +612,7 @@
         await state.uploadQueue.catch(() => { });
 
         if (state.sessionId) {
-            const url = "https://4.190.164.31:5001/VideoCapture/Cancel"
+            const url = "/VideoCapture/Cancel"
                 + `?sessionId=${encodeURIComponent(state.sessionId)}`;
 
             const response = await fetch(url, {
@@ -911,7 +911,7 @@
          */
         formData.append("photo", photo.blob, photo.fileName);
 
-        const response = await fetch("https://4.190.164.31:5001/VideoCapture/UploadPhoto", {
+        const response = await fetch("/VideoCapture/UploadPhoto", {
             method: "POST",
             headers: {
                 "RequestVerificationToken": getAntiForgeryToken()
@@ -1042,7 +1042,7 @@
             formData.append('businessId', String(getBusinessId()));
             formData.append('audio', state.audio.blob, `audio_${Date.now()}.${extension}`);
 
-            const response = await fetch('https://4.190.164.31:5001/VideoCapture/UploadAudio', {
+            const response = await fetch('/VideoCapture/UploadAudio', {
                 method: 'POST',
                 headers: {
                     RequestVerificationToken: getAntiForgeryToken()
@@ -1254,8 +1254,13 @@
                 throw new Error("Không lấy được microphone.");
             }
 
+            const protocol =
+                location.protocol === "https:"
+                    ? "wss://"
+                    : "ws://";
+
             const socket = new WebSocket(
-                "wss://4.190.164.31:5001/ws/voice"
+                protocol + location.host + "/ws/voice"
             );
 
             socket.binaryType = "arraybuffer";
