@@ -1,0 +1,22 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center mt-5">
+    <div class="d-flex flex-wrap gap-3 justify-content-center py-5">
+        <a asp-area="Map" asp-controller="Home" asp-action="Index" class="btn btn-primary" style="min-width: 120px;">
+            Map Test
+        </a>
+        <a asp-area="Voice" asp-controller="Home" asp-action="Index" class="btn btn-outline-primary" style="min-width: 120px;">
+            Voice Test
+        </a>
+        <a asp-area="User" asp-controller="Home" asp-action="Index" class="btn btn-success" style="min-width: 120px;">
+            Multi DbContext
+        </a>
+        <a asp-controller="VideoCapture" asp-action="Index" class="btn btn-info" style="min-width: 120px;">
+            Media Camera
+        </a>
+    </div>
+    <h1 class="display-4">Welcome</h1>
+    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>

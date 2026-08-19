@@ -1,0 +1,5 @@
+*.webm filter=lfs diff=lfs merge=lfs -text
+*.dll filter=lfs diff=lfs merge=lfs -text
+*.so filter=lfs diff=lfs merge=lfs -text
+*.bin filter=lfs diff=lfs merge=lfs -text
+*.mbtiles filter=lfs diff=lfs merge=lfs -text

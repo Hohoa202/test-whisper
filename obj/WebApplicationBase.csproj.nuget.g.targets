@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
+    <Import Project="$(NuGetPackageRoot)whisper.net.runtime.metal\1.9.1\build\Whisper.net.Runtime.Metal.targets" Condition="Exists('$(NuGetPackageRoot)whisper.net.runtime.metal\1.9.1\build\Whisper.net.Runtime.Metal.targets')" />
+    <Import Project="$(NuGetPackageRoot)whisper.net.runtime.cuda.windows\1.9.1\build\Whisper.net.Runtime.Cuda.Windows.targets" Condition="Exists('$(NuGetPackageRoot)whisper.net.runtime.cuda.windows\1.9.1\build\Whisper.net.Runtime.Cuda.Windows.targets')" />
+    <Import Project="$(NuGetPackageRoot)whisper.net.runtime.cuda.linux\1.9.1\build\Whisper.net.Runtime.Cuda.Linux.targets" Condition="Exists('$(NuGetPackageRoot)whisper.net.runtime.cuda.linux\1.9.1\build\Whisper.net.Runtime.Cuda.Linux.targets')" />
+    <Import Project="$(NuGetPackageRoot)whisper.net.runtime\1.9.1\build\Whisper.net.Runtime.targets" Condition="Exists('$(NuGetPackageRoot)whisper.net.runtime\1.9.1\build\Whisper.net.Runtime.targets')" />
+    <Import Project="$(NuGetPackageRoot)microsoft.identity.client.nativeinterop\0.20.6\buildtransitive\netstandard2.0\Microsoft.Identity.Client.NativeInterop.targets" Condition="Exists('$(NuGetPackageRoot)microsoft.identity.client.nativeinterop\0.20.6\buildtransitive\netstandard2.0\Microsoft.Identity.Client.NativeInterop.targets')" />
+    <Import Project="$(NuGetPackageRoot)microsoft.aspnetcore.mvc.razor.runtimecompilation\10.0.11\buildTransitive\net10.0\Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation.targets" Condition="Exists('$(NuGetPackageRoot)microsoft.aspnetcore.mvc.razor.runtimecompilation\10.0.11\buildTransitive\net10.0\Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation.targets')" />
+  </ImportGroup>
+</Project>

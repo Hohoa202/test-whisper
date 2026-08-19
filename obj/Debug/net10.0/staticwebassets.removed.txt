@@ -1,0 +1,1 @@
+D:\01.Projects\WebApplicationBaseWhisper\wwwroot\model\ggml-small.bin

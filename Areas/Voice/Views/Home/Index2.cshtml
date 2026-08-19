@@ -1,0 +1,207 @@
+﻿@{
+    ViewData["Title"] = "Voice";
+}
+
+<div class="container-fluid mt-4">
+    <div class="row g-4">
+        <div class="col-12 col-xl-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-success text-white">
+                    <div class="fw-bold">Whisper</div>
+                </div>
+
+                <div class="card-body">
+                    <div class="row g-3 align-items-start">
+                        <div class="col-12 col-lg-9">
+                            <textarea class="form-control" id="memo" rows="8"></textarea>
+                        </div>
+                        <div class="col-12 col-lg-3">
+                            <div class="p-3 border rounded bg-light">
+                                <div class="mb-2 small text-muted">
+                                    <strong>Whisper</strong>
+                                </div>
+                                <div class="d-flex gap-3">
+                                    <button class="btn btn-primary" style="min-width: 80px;"
+                                            type="button" onclick="startVoice()">
+                                        Start
+                                    </button>
+                                    <button class="btn btn-danger" style="min-width: 80px;"
+                                            type="button" onclick="stopVoice()">
+                                        Stop
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-xl-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-primary text-white">
+                    <div class="fw-bold">Web Speech API</div>
+                </div>
+
+                <div class="card-body">
+                    <div class="row g-3 align-items-start">
+                        <div class="col-12 col-lg-9">
+                            <textarea class="form-control" id="memo2" rows="8"></textarea>
+                        </div>
+
+                        <div class="col-12 col-lg-3">
+                            <div class="p-3 border rounded bg-light">
+                                <div class="mb-2 small text-muted">
+                                    <strong>Web Speech API</strong>
+                                </div>
+                                <div class="d-flex gap-3">
+                                    <button class="btn btn-primary" style="min-width: 80px;"
+                                            type="button" onclick="startVoice2()">
+                                        Start
+                                    </button>
+                                    <button class="btn btn-danger" style="min-width: 80px;"
+                                            type="button" onclick="stopVoice2()">
+                                        Stop
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let socket;
+        let audioContext;
+        let source;
+        let workletNode;
+        let stream;
+        let finalText = "";
+
+        async function startVoice() {
+            const protocol = location.protocol === "https:" ? "wss://" : "ws://";
+            socket = new WebSocket(protocol + location.host + "/ws/voice");
+            socket.binaryType = "arraybuffer";
+
+            socket.onmessage = function (event) {
+                const result = JSON.parse(event.data);
+
+                if (result.text) {
+                    finalText += result.text + "。";
+                    document.getElementById("memo").value = finalText;
+                }
+            };
+
+            socket.onopen = async function () {
+                stream = await navigator.mediaDevices.getUserMedia({
+                    audio: {
+                        channelCount: 1,
+                        echoCancellation: true,
+                        noiseSuppression: true
+                    }
+                });
+
+                audioContext = new AudioContext();
+                await audioContext.audioWorklet.addModule("/js/pcm-worklet.js");
+
+                source = audioContext.createMediaStreamSource(stream);
+                workletNode = new AudioWorkletNode(
+                    audioContext,
+                    "pcm-worklet-processor"
+                );
+
+                workletNode.port.onmessage = function (event) {
+                    if (socket.readyState === WebSocket.OPEN) {
+                        socket.send(event.data);
+                    }
+                };
+
+                source.connect(workletNode);
+                workletNode.connect(audioContext.destination);
+            };
+        }
+
+        function stopVoice() {
+            if (workletNode) {
+                workletNode.disconnect();
+            }
+
+            if (source) {
+                source.disconnect();
+            }
+
+            if (audioContext) {
+                audioContext.close();
+            }
+
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+            }
+
+            if (socket && socket.readyState === WebSocket.OPEN) {
+                socket.close();
+            }
+        }
+    </script>
+
+    <script>
+        let recognition;
+        let finalText2 = "";
+
+        function startVoice2() {
+            const SpeechRecognition =
+                window.SpeechRecognition || window.webkitSpeechRecognition;
+
+            if (!SpeechRecognition) {
+                alert("このブラウザは音声入力に対応していません。Chrome / Edge を使ってください。");
+                return;
+            }
+
+            recognition = new SpeechRecognition();
+            recognition.lang = "ja-JP";
+            recognition.continuous = true;
+            recognition.interimResults = true;
+
+            recognition.onresult = function (event) {
+                let finalText2 = "";
+
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    const text = event.results[i][0].transcript;
+
+                    if (event.results[i].isFinal) {
+                        finalText += text + "。";
+                    } else {
+                        finalText2 += text;
+                    }
+                }
+
+                document.getElementById("memo2").value = finalText + finalText2;
+            };
+
+            recognition.onend = function () {
+                recognition.start();
+            };
+            recognition.onstart = () => console.log("started");
+            recognition.onspeechstart = () => console.log("speech start");
+            recognition.onspeechend = () => console.log("speech end");
+            recognition.onaudioend = () => console.log("audio end");
+            recognition.onerror = function (event) {
+                console.log("error:", event.error);
+            };
+            recognition.onend = function () {
+                console.log("ended");
+            };
+            recognition.start();
+        }
+
+        function stopVoice2() {
+            if (recognition) {
+                recognition.stop();
+            }
+        }
+    </script>
+}
