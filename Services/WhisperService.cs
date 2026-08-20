@@ -18,7 +18,7 @@ public class WhisperService : IDisposable
         //ggml-large-v3-turbo.bin
         //ggml-large-v3.bin
 
-        var whisperPath = Path.Combine(env.WebRootPath, "model", "ggml-large-v3-turbo.bin");
+        var whisperPath = Path.Combine(env.WebRootPath, "model", "ggml-large-v3.bin");
         var vadPath = Path.Combine(env.WebRootPath, "model", "ggml-silero-v6.2.0.bin");
 
         if (!File.Exists(whisperPath))
